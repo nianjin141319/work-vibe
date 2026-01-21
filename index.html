@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BART 職場微氣象診斷</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; transition: all 1s ease; background: linear-gradient(135deg, #e0f2fe 0%, #bfdbfe 100%); }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .option-btn:active { transform: scale(0.98); }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+    <div id="app" class="max-w-md w-full glass rounded-[2.5rem] shadow-2xl p-10 animate__animated animate__fadeIn">
+        <div id="start-screen" class="text-center">
+            <div class="text-5xl mb-6">☕</div>
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">職場微氣象診斷</h1>
+            <p class="text-gray-600 mb-8 leading-relaxed">這是一個安靜的空間，讓我們透過 BART 框架，把不屬於你的壓力卸下來。</p>
+            <button onclick="startQuiz()" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-lg hover:bg-blue-700 transition">開始對齊邊界</button>
+        </div>
+        <div id="quiz-screen" class="hidden">
+            <div class="mb-2 text-blue-500 font-bold tracking-widest text-xs" id="dimension-label">BOUNDARY</div>
+            <div class="h-1 w-full bg-blue-100 rounded-full mb-8"><div id="progress-bar" class="h-1 bg-blue-500 rounded-full transition-all duration-500" style="width: 25%"></div></div>
+            <h2 id="question-text" class="text-xl text-gray-800 font-medium mb-10 leading-snug"></h2>
+            <div class="space-y-4">
+                <button onclick="handleAnswer(1)" class="option-btn w-full p-5 rounded-2xl bg-white/50 hover:bg-white border border-transparent hover:border-blue-300 transition text-left text-gray-700">☀️ 沒這回事，我處理得很好</button>
+                <button onclick="handleAnswer(3)" class="option-btn w-full p-5 rounded-2xl bg-white/50 hover:bg-white border border-transparent hover:border-blue-300 transition text-left text-gray-700">☁️ 偶爾發生，但還能控制</button>
+                <button onclick="handleAnswer(5)" class="option-btn w-full p-5 rounded-2xl bg-white/50 hover:bg-white border border-transparent hover:border-blue-300 transition text-left text-gray-700">⛈️ 沒錯，這完全在說我</button>
+            </div>
+        </div>
+        <div id="result-screen" class="hidden animate__animated animate__fadeIn">
+            <div id="res-icon" class="text-7xl mb-6 text-center"></div>
+            <h2 id="res-title" class="text-2xl font-bold text-center mb-6"></h2>
+            <div id="res-body" class="text-gray-700 space-y-4 text-sm leading-relaxed mb-8"></div>
+            <button onclick="location.reload()" class="w-full py-4 bg-gray-800 text-white rounded-2xl font-bold hover:bg-black transition">重新整理氣象</button>
+        </div>
+    </div>
+    <script>
+        const questions = [
+            { t: "準備下班或去運動時，大腦仍不由自主地重播工作中的爭議或焦慮？", tag: "BOUNDARY" },
+            { t: "正為一個我無法決定走向的事情，承擔心理上的後果與焦慮？", tag: "AUTHORITY" },
+            { t: "投入的心力，更多是在扮演『救火隊』或『保姆』，而非發揮專業產出？", tag: "ROLE" },
+            { t: "處理這件事讓我感到瞎忙，對我的專業長期目標沒有幫助？", tag: "TASK" }
+        ];
+        let step = 0, score = 0;
+        function startQuiz() { document.getElementById('start-screen').classList.add('hidden'); document.getElementById('quiz-screen').classList.remove('hidden'); showQuestion(); }
+        function showQuestion() { const q = questions[step]; document.getElementById('question-text').innerText = q.t; document.getElementById('dimension-label').innerText = q.tag; document.getElementById('progress-bar').style.width = ((step + 1) / 4 * 100) + '%'; }
+        function handleAnswer(val) { score += val; step++; if (score > 6) document.body.style.background = "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)"; if (score > 13) document.body.style.background = "linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%)"; if (step < 4) { showQuestion(); } else { renderResult(); } }
+        function renderResult() { document.getElementById('quiz-screen').classList.add('hidden'); document.getElementById('result-screen').classList.remove('hidden'); let icon, title, body; if (score <= 8) { icon = "☀️"; title = "主動式邊界：晴朗"; body = "<p class='font-bold text-blue-600'>診斷：邊界防禦穩固，狀態健康。</p><p>請繼續維持九點的運動習慣，那是你最強大的護身符。</p>"; } else if (score <= 15) { icon = "☁️"; title = "滲透式邊界：多雲"; body = "<p class='font-bold text-gray-600'>診斷：邊界開始模糊。練習將焦慮還給決策者。</p>"; } else { icon = "⛈️"; title = "責任過載：雷雨胞"; body = "<p class='font-bold text-red-600'>診斷：嚴重失衡。今晚請務必強制登出工作，把平靜留給自己。</p>"; } document.getElementById('res-icon').innerText = icon; document.getElementById('res-title').innerText = title; document.getElementById('res-body').innerHTML = body; }
+    </script>
+</body>
+</html>
+
