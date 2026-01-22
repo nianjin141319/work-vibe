@@ -3,223 +3,159 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BART 向上管理深度診斷</title>
+  <title>BART 向上管理｜專業結構診斷</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --olive-dark: #3c4033;
-      --olive-base: #556b2f; /* 橄欖綠核心色 */
-      --olive-light: #808b6d;
-    }
-    body { 
-      font-family: 'Noto Sans TC', sans-serif; 
-      background: var(--olive-dark); 
-      background-image: radial-gradient(circle at 20% 30%, #4a5d23 0%, #3c4033 100%);
-      color: #f1f5f9; 
-    }
-    .glass-card { 
-      background: rgba(255, 255, 255, 0.05); 
-      backdrop-filter: blur(16px); 
-      border: 1px solid rgba(255, 255, 255, 0.1); 
-    }
-    .option-btn { 
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.1); 
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-    }
-    .option-btn:hover { 
-      background: rgba(255, 255, 255, 0.1);
-      border-color: #a3b18a;
-      transform: translateX(8px);
-    }
-    .fade-in { animation: fadeIn 0.5s ease-out forwards; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .progress-glow {
-      box-shadow: 0 0 10px rgba(163, 177, 138, 0.5);
-    }
+    :root { --olive-dark: #3c4033; --olive-base: #556b2f; --olive-light: #a3b18a; }
+    body { font-family: 'Noto Sans TC', sans-serif; background: var(--olive-dark); color: #f1f5f9; margin: 0; }
+    .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    .option-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.2s ease; }
+    .option-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--olive-light); transform: translateX(6px); }
+    .fade-in { animation: fadeIn 0.6s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
-
 <body class="min-h-screen flex items-center justify-center p-4">
 
-<div class="max-w-2xl w-full glass-card rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
+<div class="max-w-3xl w-full glass-card rounded-[2.5rem] p-8 shadow-2xl">
   
   <div id="start-screen" class="text-center py-10 fade-in">
-    <div class="w-20 h-20 bg-lime-800/30 rounded-full flex items-center justify-center mx-auto mb-6 border border-lime-600/30">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-lime-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-      </svg>
-    </div>
     <h1 class="text-3xl font-bold mb-4 tracking-tight">向上管理：BART 深度診斷</h1>
-    <p class="text-slate-300/80 mb-10 leading-relaxed font-light">
-      這是一個舒緩的空間，讓我們釐清：<br>
-      <span class="text-white font-normal text-lg">你在替誰，承受哪一種結構性壓力。</span>
-    </p>
-    <button onclick="startQuiz()" class="bg-[#a3b18a] text-[#344e41] px-12 py-4 rounded-full font-bold hover:bg-[#dad7cd] transition-all transform hover:scale-105 shadow-xl">
-      進入診斷室
-    </button>
+    <p class="text-slate-300/80 mb-10 leading-relaxed font-light">這不是抱怨，而是為了看清工作結構。<br>讓我們將壓力轉化為可對話的專業數據。</p>
+    <button onclick="startQuiz()" class="bg-[#a3b18a] text-[#3c4033] px-12 py-4 rounded-full font-bold hover:bg-[#dad7cd] transition-all shadow-xl">開始診斷</button>
   </div>
 
   <div id="quiz-screen" class="hidden">
-    <div class="mb-10">
-      <div class="flex justify-between text-xs text-slate-400 mb-3 tracking-widest">
-        <span id="step" class="font-bold">STEP 01</span>
-        <span id="progress">1/12</span>
-      </div>
-      <div class="w-full bg-white/5 h-1.5 rounded-full">
-        <div id="bar" class="bg-[#a3b18a] h-full rounded-full transition-all duration-500 progress-glow"></div>
-      </div>
+    <div class="mb-10 text-xs text-slate-400 flex justify-between tracking-widest">
+      <span id="step">STEP 01</span>
+      <span id="progress">1/12</span>
     </div>
-
-    <h2 id="question" class="text-xl mb-10 leading-relaxed min-h-[5rem] font-medium text-slate-100"></h2>
+    <div class="w-full bg-white/5 h-1 rounded-full mb-10 overflow-hidden">
+      <div id="bar" class="bg-[#a3b18a] h-full transition-all duration-500 shadow-[0_0_8px_#a3b18a]"></div>
+    </div>
+    <h2 id="question" class="text-xl mb-10 leading-relaxed min-h-[5rem] text-slate-100"></h2>
     <div id="options" class="space-y-4"></div>
   </div>
 
   <div id="result-screen" class="hidden fade-in">
-    <h2 class="text-2xl font-bold text-center mb-6">工作結構分析報告</h2>
-
-    <div class="mb-8 flex justify-center p-4 bg-white/5 rounded-3xl">
-      <div class="w-full max-w-[320px]">
-        <canvas id="chart"></canvas>
+    <h2 class="text-2xl font-bold text-center mb-8">BART 工作關係分析報告</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+      <div class="bg-white/5 p-4 rounded-3xl flex items-center justify-center">
+        <canvas id="chart" width="300" height="300"></canvas>
       </div>
-    </div>
-
-    <div class="p-7 rounded-[2rem] border bg-white/5 border-white/10 mb-8 shadow-inner">
-      <h3 id="result-title" class="text-xl font-bold mb-4 text-[#a3b18a]"></h3>
-      <p id="result-desc" class="text-sm text-slate-300 leading-relaxed mb-6"></p>
-
       <div class="space-y-4">
-        <h4 class="text-xs font-bold uppercase tracking-[0.2em] text-[#a3b18a]/70">
-          🛠 POA 策略行動指南
-        </h4>
-        <div id="poa" class="bg-black/20 p-5 rounded-2xl text-sm leading-relaxed border border-white/5 font-light"></div>
+        <div class="p-6 rounded-2xl bg-[#a3b18a]/10 border border-[#a3b18a]/20">
+          <h3 id="result-title" class="text-lg font-bold text-[#a3b18a] mb-2"></h3>
+          <p id="result-desc" class="text-sm text-slate-300 leading-relaxed"></p>
+        </div>
+        <div class="p-4 bg-black/20 rounded-2xl border border-white/5">
+          <h4 class="text-xs font-bold text-[#a3b18a] mb-2 uppercase tracking-widest">POA 行動建議</h4>
+          <div id="poa" class="text-sm text-slate-300 leading-relaxed font-light"></div>
+        </div>
       </div>
     </div>
 
-    <p id="resource-status" class="text-xs text-center text-slate-400 mb-8 italic"></p>
+    <div class="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
+      <h3 class="text-sm font-bold text-slate-200 mb-3 flex items-center">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+        工作結構觀察摘要（向上溝通草稿）
+      </h3>
+      <p class="text-[10px] text-slate-500 mb-3 italic">此段文字基於你的診斷結果生成，可直接複製用於報告或面談。</p>
+      <textarea id="safeText" class="w-full h-32 bg-black/30 border border-white/10 rounded-xl p-4 text-xs text-slate-300 focus:outline-none focus:border-[#a3b18a] transition-all"></textarea>
+    </div>
 
-    <button onclick="location.reload()" class="text-sm text-slate-400 hover:text-white w-full transition-colors underline underline-offset-8">
-      重啟對話
-    </button>
+    <button onclick="location.reload()" class="w-full text-xs text-slate-500 hover:text-white transition-colors">重新測驗</button>
   </div>
-
 </div>
 
 <script>
 const questions = [
- {q:"當科長臨時改變優先順序時，我通常會：", o:["討論合理性並確認影響","稍作確認後接受","內心抗拒但保持沈默","立刻放下手邊工作配合"], c:"B"},
- {q:"當科長跳過你直接交辦組員雜事時，你的反應是：", o:["找科長釐清溝通窗口","要求組員務必向我回報","感到不快但自行補位","放棄反映，認命接受"], c:"A"},
- {q:"關於科長對你這個角色的『真正期待』，你感覺：", o:["目標清晰且穩定","大致清楚但細節模糊","常隨科長心情變動","完全不明，感到迷航"], c:"R"},
- {q:"臨時交辦的庶務吃掉你專案時間的比例：", o:["低於 10%","約 20–30%","接近 50%","超過一半，常需加班"], c:"T"},
- {q:"當你在工作遇到瓶頸時，科長能提供實質支持：", o:["總是如此","經常如此","很少發生","從不如此"], c:"Res"},
- {q:"科長願意理解你的專業考量或管理難處：", o:["高度認同","部分認同","很少感受到","完全不認同"], c:"Res"},
+ {q:"當主管臨時改變優先順序時，我通常會：", o:["討論合理性與對專案的影響","稍作確認後接受","內心抗拒但保持沈默","立刻放下手邊工作配合"], c:"B"},
+ {q:"當主管跳過我直接交辦組員工作時，我的反應是：", o:["找主管釐清溝通窗口","要求組員務必向我回報","感到不快但自行補位","放棄反映，認命接受"], c:"A"},
+ {q:"關於主管對我這個角色的『核心期待』，我感覺：", o:["目標清晰且穩定","大致清楚但細節模糊","常隨主管心情變動","完全不明，感到迷航"], c:"R"},
+ {q:"臨時交辦的庶務吃掉我原本專案時間的比例：", o:["低於 10%","約 20–30%","接近 50%","超過一半，常需加班"], c:"T"},
+ {q:"當我遇到瓶頸時，主管能提供實質資源或建議：", o:["總是如此","經常如此","很少發生","從不如此"], c:"Res"},
+ {q:"主管願意理解我的專業考量或管理難處：", o:["高度認同","部分認同","很少感受到","完全不認同"], c:"Res"},
  {q:"在非工作時間被交辦或聯絡的頻率：", o:["幾乎沒有","偶爾發生","每週都有","幾乎每天"], c:"B"},
- {q:"你在組內資源或考績上的實質話語權：", o:["具有決定性影響","有部分影響力","僅能提供參考","完全沒有權力"], c:"A"},
- {q:"當你主動提出流程優化時，科長的支持態度：", o:["積極授權並支持","口頭支持但沒行動","持保留或觀望態度","經常質疑或阻礙"], c:"R"},
- {q:"目前的工作壓力是否正在消耗你的健康或情緒：", o:["完全不會","偶爾疲累","常感焦慮","已精疲力竭"], c:"T"},
- {q:"你拒絕不合理要求時的心理安全感：", o:["很有信心","視情況而定","感到困難","完全不敢"], c:"B"},
- {q:"科長是否會在專案開始前給予清楚的成功標準：", o:["標準極清晰","尚算明確","常有灰色地帶","事後才說做錯"], c:"Res"}
+ {q:"我在組內資源分配或考核上的話語權：", o:["具有決定性影響","有部分影響力","僅能提供參考","完全沒有權力"], c:"A"},
+ {q:"當我提出優化流程時，主管的支持態度：", o:["積極授權並支持","口頭支持但沒行動","持保留或觀望態度","經常質疑或阻礙"], c:"R"},
+ {q:"目前的工作壓力是否正在消耗我的情緒或健康：", o:["完全不會","偶爾疲累","常感焦慮","精疲力竭"], c:"T"},
+ {q:"我拒絕不合理要求時的心理安全感：", o:["很有信心","視情況而定","感到困難","完全不敢"], c:"B"},
+ {q:"主管是否會在專案開始前給予清楚的成功標準：", o:["標準極清晰","尚算明確","常有灰色地帶","事後才說做錯"], c:"Res"}
 ];
 
-let i=0;
-let score={B:0,A:0,R:0,T:0,Res:0};
+let i=0; let scores={B:0,A:0,R:0,T:0,Res:0};
 
-function startQuiz(){
- document.getElementById('start-screen').classList.add('hidden');
- document.getElementById('quiz-screen').classList.remove('hidden');
- show();
-}
+function startQuiz(){ document.getElementById('start-screen').classList.add('hidden'); document.getElementById('quiz-screen').classList.remove('hidden'); show(); }
 
 function show(){
  const q=questions[i];
- const questionEl = document.getElementById('question');
- questionEl.classList.remove('fade-in');
- void questionEl.offsetWidth; // trigger reflow
- questionEl.classList.add('fade-in');
- 
- questionEl.innerText=q.q;
- document.getElementById('step').innerText=`STEP ${String(i+1).padStart(2, '0')}`;
- document.getElementById('progress').innerText=`${i+1} / ${questions.length}`;
- document.getElementById('bar').style.width=`${(i+1)/questions.length*100}%`;
-
- const box=document.getElementById('options');
- box.innerHTML='';
+ document.getElementById('question').innerText=q.q;
+ document.getElementById('step').innerText=`STEP ${String(i+1).padStart(2,'0')}`;
+ document.getElementById('progress').innerText=`${i+1} / 12`;
+ document.getElementById('bar').style.width=`${(i+1)/12*100}%`;
+ const box=document.getElementById('options'); box.innerHTML='';
  q.o.forEach((t,idx)=>{
   const b=document.createElement('button');
-  b.className='option-btn w-full p-4 rounded-2xl text-left text-slate-200';
-  b.innerText=t;
-  b.onclick=()=>choose(idx+1);
-  box.appendChild(b);
+  b.className='option-btn w-full p-4 rounded-2xl text-left text-slate-200 text-sm';
+  b.innerText=t; b.onclick=()=>choose(idx+1); box.appendChild(b);
  });
 }
 
 function choose(v){
- const c=questions[i].c;
- score[c]+= (c==="Res")?(5-v):v;
- i++;
- i<questions.length?show():result();
+ const c=questions[i].c; scores[c]+= (c==="Res")?(5-v):v;
+ i++; i<12?show():result();
 }
 
 function result(){
  document.getElementById('quiz-screen').classList.add('hidden');
  document.getElementById('result-screen').classList.remove('hidden');
- confetti({ particleCount: 150, spread: 70, origin: { y: 0.8 }, colors: ['#a3b18a', '#dad7cd', '#588157'] });
+ confetti({ particleCount: 100, spread: 70, origin: { y: 0.8 }, colors: ['#a3b18a', '#556b2f'] });
 
- const main=['B','A','R','T'].sort((a,b)=>score[b]-score[a]).slice(0,2);
+ const sorted = ['B','A','R','T'].sort((a,b)=>scores[b]-scores[a]);
+ const main = sorted[0];
 
- const map={
- B:{t:"界線失守",d:"你正在替制度吸收雜訊，界線頻繁被科長穿透。",p:"<strong>Plan-Offer-Ask:</strong><br>列出排程 → 提議將臨時事項排入下週清單 → 請問科長是否接受原專案延後？"},
- A:{t:"權力真空",d:"你承擔了組長的責任，但沒有對等的正式授權。",p:"<strong>策略建議:</strong><br>建立單一窗口機制 → 擬定提案流程書 → 請科長在組務會議公開確認你的權限。"},
- R:{t:"角色錯位",d:"你被當成資深執行者或助理，而非管理角色。",p:"<strong>定位調整:</strong><br>準備『管理型報表』 → 向科長對齊 KPI → 確認核心職責是『產出』還是『管理』。"},
- T:{t:"任務過載",d:"目前的任務量已超過健康負荷，處於高風險區。",p:"<strong>減壓方案:</strong><br>列出任務清單 → 標示可移除或自動化的項目 → 向科長詢問當下的絕對優先級。"}
+ const reports = {
+  B:{ t:"界線失守 (Boundary)", d:"工作邊界頻繁被穿透，你正在替制度吸收過多雜訊。", p:"• Plan：列出既有任務時程<br>• Offer：提出替代處理順序<br>• Ask：請主管確認優先級"},
+  A:{ t:"權力真空 (Authority)", d:"責任在你身上，但決策權未下放，形成權責不對等。", p:"• Plan：明確分工建議<br>• Offer：提議單一溝通窗口<br>• Ask：請主管公開確認角色授權"},
+  R:{ t:"角色模糊 (Role)", d:"期待與行為不一致，你花太多力氣在猜測而非推進。", p:"• Plan：整理目前的角色現狀<br>• Offer：對齊管理核心任務<br>• Ask：確認真正的成功指標"},
+  T:{ t:"任務過載 (Task)", d:"任務量長期超出負荷，已開始侵蝕你的判斷力。", p:"• Plan：盤點任務價值與時數<br>• Offer：建議刪減低價值工作<br>• Ask：詢問哪些是可以不做的"}
  };
 
- document.getElementById('result-title').innerText= `${map[main[0]].t} × ${map[main[1]].t}`;
- document.getElementById('result-desc').innerText= `${map[main[0]].d} 同時伴隨 ${map[main[1]].d}`;
- document.getElementById('poa').innerHTML= `<strong>【核心：${map[main[0]].t}】</strong><br>${map[main[0]].p}<br><br><strong>【伴隨：${map[main[1]].t}】</strong><br>${map[main[1]].p}`;
- 
- const resDesc = score.Res > 8 ? "⚠ 資源枯竭警示：你目前幾乎沒有緩衝資源，這會讓結構壓力直接轉化為身心消耗。" : "💡 資源緩衝狀態：你尚能獲得部分支持，建議在資源還沒耗盡前主動調整結構。";
- document.getElementById('resource-status').innerText = resDesc;
+ document.getElementById('result-title').innerText = reports[main].t;
+ document.getElementById('result-desc').innerText = reports[main].d;
+ document.getElementById('poa').innerHTML = reports[main].p;
 
- chart();
+ // 動態摘要生成
+ let safeTxt = `近期在組務運作上，我觀察到幾個結構性狀況：\n`;
+ if(scores.B > 10) safeTxt += `1. 臨時交辦與外部需求較頻繁，對原定專案進度的穩定性造成干擾。\n`;
+ if(scores.A > 10) safeTxt += `1. 部分事務的權責與溝通窗口尚待釐清，若能建立單一授權路徑，效率會更高。\n`;
+ if(scores.R > 10) safeTxt += `1. 目前角色定位與核心期待仍有對齊空間，希望能進一步釐清優先標準。\n`;
+ if(scores.T > 10) safeTxt += `1. 目前整體任務量趨近飽和，建議重新檢視任務的優先權重。\n`;
+ if(scores.Res > 10) safeTxt += `2. 在執行專案時若能獲得更多資源支持，能更確保產出的產品質與速度。\n`;
+ safeTxt += `\n希望能針對上述情況與您討論，優化後續的工作配置。`;
+ document.getElementById('safeText').value = safeTxt;
+
+ renderChart();
 }
 
-function chart(){
- const ctx = document.getElementById('chart').getContext('2d');
- new Chart(ctx, {
+function renderChart(){
+ new Chart(document.getElementById('chart'), {
   type:'radar',
   data:{
-   labels:['界線','權力','角色','任務','資源不足'],
-   datasets:[{
-     data:[score.B, score.A, score.R, score.T, score.Res],
-     fill:true,
-     backgroundColor:'rgba(163, 177, 138, 0.2)',
-     borderColor:'#a3b18a',
-     pointBackgroundColor:'#fff',
-     borderWidth: 2
-   }]
+   labels:['界線','權杖','角色','任務','資源不足'],
+   datasets:[{ data:[scores.B, scores.A, scores.R, scores.T, scores.Res], fill:true, backgroundColor:'rgba(163, 177, 138, 0.2)', borderColor:'#a3b18a', borderWidth:2 }]
   },
   options:{
-    plugins:{legend:{display:false}},
-    scales:{
-      r:{
-        min:0, max:15,
-        ticks:{display:false},
-        grid: { color: 'rgba(255, 255, 255, 0.1)' },
-        angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
-        pointLabels: { color: '#808b6d', font: { size: 12 } }
-      }
-    }
+   scales:{ r:{ min:0, max:15, ticks:{display:false}, grid:{color:'rgba(255,255,255,0.05)'}, angleLines:{color:'rgba(255,255,255,0.1)'}, pointLabels:{color:'#a3b18a'} } },
+   plugins:{ legend:{display:false} }
   }
  });
 }
 </script>
-
 </body>
 </html>
