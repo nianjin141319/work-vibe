@@ -1,214 +1,146 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BART 向上管理壓力診斷器</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #0f172a; color: #f8fafc; }
-        .glass-card { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .progress-bar { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .option-btn { border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.2s; }
-        .option-btn:hover { background: rgba(59, 130, 246, 0.2); border-color: #3b82f6; transform: translateX(5px); }
-    </style>
+  <meta charset="UTF-8" />
+  <title>工作關係壓力診斷（BART）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 24px;
+      color: #222;
+    }
+    .container {
+      max-width: 720px;
+      margin: auto;
+      background: #fff;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.08);
+    }
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+    }
+    .desc {
+      color: #555;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .question p {
+      font-weight: 500;
+    }
+    label {
+      display: block;
+      margin: 6px 0;
+      cursor: pointer;
+    }
+    button {
+      margin-top: 24px;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 8px;
+      background: #2c2c2c;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 32px;
+      padding: 20px;
+      background: #f1f1f1;
+      border-radius: 10px;
+      display: none;
+      line-height: 1.7;
+    }
+  </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
-
-    <div id="app" class="max-w-2xl w-full glass-card rounded-3xl p-8 shadow-2xl">
-        <div id="start-screen" class="text-center">
-            <div class="inline-block p-3 rounded-2xl bg-blue-500/10 mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-            </div>
-            <h1 class="text-3xl font-bold mb-4 text-white">BART 向上管理壓力診斷器</h1>
-            <p class="text-slate-400 mb-8 leading-relaxed">
-                這份測驗專注於你與**上層主管 (科長)** 的互動狀況。<br>
-                幫助你釐清：壓力是來自職責不清，還是系統性的權力干預？
-            </p>
-            <button onclick="startQuiz()" class="bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-full font-bold transition-all shadow-lg hover:shadow-blue-500/20">開始深度診斷</button>
-        </div>
-
-        <div id="quiz-screen" class="hidden">
-            <div class="mb-8">
-                <div class="flex justify-between items-end mb-2">
-                    <span id="cat-label" class="text-xs font-bold tracking-widest text-blue-400 uppercase">Category</span>
-                    <span id="progress-text" class="text-xs text-slate-500 font-mono">01 / 12</span>
-                </div>
-                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                    <div id="progress-bar" class="progress-bar bg-blue-500 h-full w-0"></div>
-                </div>
-            </div>
-            
-            <h2 id="question-text" class="text-xl mb-10 min-h-[4rem] font-medium leading-relaxed text-slate-100">題目載入中...</h2>
-            
-            <div class="space-y-3">
-                <button onclick="nextQuestion(1)" class="option-btn w-full p-4 rounded-xl text-left hover:pl-6 italic text-slate-400">1 - 從不如此</button>
-                <button onclick="nextQuestion(2)" class="option-btn w-full p-4 rounded-xl text-left hover:pl-6 text-slate-300">2 - 很少發生</button>
-                <button onclick="nextQuestion(3)" class="option-btn w-full p-4 rounded-xl text-left hover:pl-6 text-slate-200">3 - 偶爾發生</button>
-                <button onclick="nextQuestion(4)" class="option-btn w-full p-4 rounded-xl text-left hover:pl-6 font-medium text-white">4 - 經常如此</button>
-                <button onclick="nextQuestion(5)" class="option-btn w-full p-4 rounded-xl text-left hover:pl-6 font-bold text-blue-400">5 - 總是如此</button>
-            </div>
-        </div>
-
-        <div id="result-screen" class="hidden">
-            <h2 class="text-2xl font-bold text-center mb-6 text-white">診斷分析結果</h2>
-            <div class="mb-10 flex justify-center">
-                <div class="w-full max-w-[400px]">
-                    <canvas id="radarChart"></canvas>
-                </div>
-            </div>
-            
-            <div id="result-box" class="p-6 rounded-2xl mb-8 border transition-all">
-                <div class="flex items-center mb-3">
-                    <span id="tag-icon" class="mr-2"></span>
-                    <h3 id="result-label" class="text-xl font-bold"></h3>
-                </div>
-                <p id="result-desc" class="text-slate-300 text-sm leading-relaxed mb-4"></p>
-                <div class="bg-black/20 p-4 rounded-xl">
-                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">向上對齊建議：</h4>
-                    <ul id="advice-list" class="space-y-2 text-sm text-slate-200"></ul>
-                </div>
-            </div>
-
-            <button onclick="location.reload()" class="w-full py-3 text-slate-500 hover:text-white transition-colors text-sm">重新評估</button>
-        </div>
+<body>
+  <div class="container">
+    <h1>向上管理壓力診斷（BART）</h1>
+    <div class="desc">
+      這不是性格測驗，而是幫你釐清：<br/>
+      <strong>你在「跟主管工作」這件事上，是卡在界線、權力、角色，還是已經開始被消耗。</strong>
     </div>
 
-    <script>
-        const questions = [
-            // B (Boundary)
-            { q: "科長常在下班後或假日，直接交辦非緊急的瑣事給我。", cat: "Boundary" },
-            { q: "當別科將工作推給我們時，科長常未經與我討論就直接承接。", cat: "Boundary" },
-            { q: "科長會跳過我，直接在群組對組員下達新的臨時指令。", cat: "Boundary" },
-            // A (Authority)
-            { q: "當我嘗試對組員行使管理權（如分配工作）時，科長常在公開場合推翻我的決定。", cat: "Authority" },
-            { q: "在涉及組內核心獎懲或資源分配時，我覺得自己完全沒有影響力。", cat: "Authority" },
-            { q: "當我與組員發生意見分歧，科長傾向於站在組員那邊或保持沉默，而非支持我的管理地位。", cat: "Authority" },
-            // R (Role)
-            { q: "科長似乎把我當成「資深執行者」而非「帶領組務的主管」。", cat: "Role" },
-            { q: "我不明確科長對我這個職位的具體考核標準為何（是看我的產出，還是看我的管理？）。", cat: "Role" },
-            { q: "科長常對我抱怨細節，而非針對組內的整體策略進行討論。", cat: "Role" },
-            // T (Task)
-            { q: "科長交辦給我的任務，常與我原本定義的組務目標發生嚴重衝突。", cat: "Task" },
-            { q: "科長常要求我處理他個人層級的公文，導致我沒時間處理組長職責。", cat: "Task" },
-            { q: "我覺得科長並不在乎我如何分配工作，只要我能「自己搞定」所有事就好。", cat: "Task" }
-        ];
+    <form id="quiz">
+      <!-- B -->
+      <div class="question">
+        <p>1️⃣ 當主管沒有說清楚責任歸屬時，我通常會先接下來再說。</p>
+        <label><input type="radio" name="q1" value="1"> 幾乎不會</label>
+        <label><input type="radio" name="q1" value="2"> 偶爾</label>
+        <label><input type="radio" name="q1" value="3"> 常常</label>
+        <label><input type="radio" name="q1" value="4"> 幾乎每次</label>
+      </div>
 
-        let currentIdx = 0;
-        let scores = { Boundary: 0, Authority: 0, Role: 0, Task: 0 };
+      <!-- A -->
+      <div class="question">
+        <p>2️⃣ 主管臨時改變方向時，我會優先配合，而不是討論是否合理。</p>
+        <label><input type="radio" name="q2" value="1"> 幾乎不會</label>
+        <label><input type="radio" name="q2" value="2"> 偶爾</label>
+        <label><input type="radio" name="q2" value="3"> 常常</label>
+        <label><input type="radio" name="q2" value="4"> 幾乎每次</label>
+      </div>
 
-        function startQuiz() {
-            document.getElementById('start-screen').classList.add('hidden');
-            document.getElementById('quiz-screen').classList.remove('hidden');
-            showQuestion();
-        }
+      <!-- R -->
+      <div class="question">
+        <p>3️⃣ 我其實不太確定，主管對我這個角色「真正期待的是什麼」。</p>
+        <label><input type="radio" name="q3" value="1"> 非常清楚</label>
+        <label><input type="radio" name="q3" value="2"> 大致清楚</label>
+        <label><input type="radio" name="q3" value="3"> 有點模糊</label>
+        <label><input type="radio" name="q3" value="4"> 非常模糊</label>
+      </div>
 
-        function showQuestion() {
-            const q = questions[currentIdx];
-            document.getElementById('cat-label').innerText = q.cat;
-            document.getElementById('question-text').innerText = q.q;
-            document.getElementById('progress-text').innerText = `${String(currentIdx + 1).padStart(2, '0')} / 12`;
-            document.getElementById('progress-bar').style.width = `${((currentIdx + 1) / questions.length) * 100}%`;
-        }
+      <!-- T -->
+      <div class="question">
+        <p>4️⃣ 和主管互動本身，就會消耗我大量心力。</p>
+        <label><input type="radio" name="q4" value="1"> 幾乎不會</label>
+        <label><input type="radio" name="q4" value="2"> 偶爾</label>
+        <label><input type="radio" name="q4" value="3"> 常常</label>
+        <label><input type="radio" name="q4" value="4"> 幾乎每天</label>
+      </div>
 
-        function nextQuestion(val) {
-            scores[questions[currentIdx].cat] += val;
-            currentIdx++;
-            if (currentIdx < questions.length) {
-                showQuestion();
-            } else {
-                showResult();
-            }
-        }
+      <button type="button" onclick="calcResult()">查看結果</button>
+    </form>
 
-        function showResult() {
-            document.getElementById('quiz-screen').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.7 }, colors: ['#3b82f6', '#ffffff'] });
+    <div id="result" class="result"></div>
+  </div>
 
-            const data = [scores.Boundary, scores.Authority, scores.Role, scores.Task];
-            const maxCat = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+  <script>
+    function calcResult() {
+      const total = [...document.querySelectorAll('input[type=radio]:checked')]
+        .reduce((sum, el) => sum + Number(el.value), 0);
 
-            const report = {
-                Boundary: { 
-                    label: "邊界侵蝕危機 (Boundary Erosion)", 
-                    color: "border-red-500/50 bg-red-500/10",
-                    text: "text-red-400",
-                    desc: "科長頻繁刺穿你的防火牆。這代表你與科長之間缺乏『任務防火牆』，導致你必須處理過多隨機需求。",
-                    advice: ["建立任務入口準則：非緊急事項請統一進入清單，而非即時訊息","與科長面談『干擾對專案進度的損害』","要求科長交辦指令時必須同時知會你（若他直接找組員）。"] 
-                },
-                Authority: { 
-                    label: "正式權威真空 (Authority Gap)", 
-                    color: "border-amber-500/50 bg-amber-500/10",
-                    text: "text-amber-400",
-                    desc: "科長可能無意間（或有意地）削弱了你在組內的合法權力。當組長失去配劍，管理效能會趨近於零。",
-                    advice: ["爭取公開授權：請科長在會議上明確你對特定事務的決策權","私下溝通：反映在組員面前被推翻決定，會降低整體團隊效率","設定考核話語權：確保你在組員考績評分中有實質佔比。"] 
-                },
-                Role: { 
-                    label: "角色投射錯位 (Role Ambiguity)", 
-                    color: "border-blue-500/50 bg-blue-500/10",
-                    text: "text-blue-400",
-                    desc: "科長把你當成了『他的助理』而非『他的組長』。這是一種管理階層的定位偏差。",
-                    advice: ["啟動期待對齊：問科長『您希望我花更多時間在執行細節，還是優化組內流程？』","提交管理報表：主動匯報組務進度，引導科長進入決策視野","減少對瑣事的積極回應，強化管理產出的專業感。"] 
-                },
-                Task: { 
-                    label: "任務篡位衝突 (Task Overload)", 
-                    color: "border-purple-500/50 bg-purple-500/10",
-                    text: "text-purple-400",
-                    desc: "你正在執行本該由科長處理（或更上一層）的任務，或者你的任務清單中塞滿了無效雜事。",
-                    advice: ["任務排序對齊：給科長看你的任務清單，問『若要加入新工作，哪一個應延後？』","識別非本職工作：區分哪些是『科長私人交辦』，哪些是『組務正軌』","練習優雅地推卸：說明因目前組內專案吃緊，建議該任務改由其他方式處理。"] 
-                }
-            };
+      const result = document.getElementById('result');
+      result.style.display = 'block';
 
-            const final = report[maxCat];
-            const box = document.getElementById('result-box');
-            box.className = `p-6 rounded-2xl mb-8 border transition-all ${final.color}`;
-            document.getElementById('result-label').innerText = final.label;
-            document.getElementById('result-label').className = `text-xl font-bold ${final.text}`;
-            document.getElementById('result-desc').innerText = final.desc;
-            document.getElementById('advice-list').innerHTML = final.advice.map(a => `<li>• ${a}</li>`).join('');
-
-            renderChart(data);
-        }
-
-        function renderChart(data) {
-            const ctx = document.getElementById('radarChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['Boundary (邊界)', 'Authority (權威)', 'Role (角色)', 'Task (任務)'],
-                    datasets: [{
-                        label: '科長互動壓力分佈',
-                        data: data,
-                        fill: true,
-                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                        borderColor: '#3b82f6',
-                        borderWidth: 2,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#3b82f6',
-                        pointHoverRadius: 5
-                    }]
-                },
-                options: {
-                    scales: {
-                        r: {
-                            min: 0,
-                            max: 15,
-                            ticks: { display: false, stepSize: 3 },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
-                            pointLabels: { color: '#94a3b8', font: { size: 12, weight: 'bold' } }
-                        }
-                    },
-                    plugins: { legend: { display: false } }
-                }
-            });
-        }
-    </script>
+      if (total <= 6) {
+        result.innerHTML = `
+          <strong>你目前的狀態：可控壓力區</strong><br/><br/>
+          你不是沒壓力，而是你還撐得住。<br/>
+          建議你趁現在，開始「把默默承擔的事說清楚」，避免未來一次爆掉。
+        `;
+      } else if (total <= 10) {
+        result.innerHTML = `
+          <strong>你目前的狀態：慢性消耗中</strong><br/><br/>
+          你其實已經在幫體制吸收不穩定性了。<br/>
+          問題不在你能力，而在「責任與權力不對等」。<br/>
+          下一步不是更努力，而是重新畫界線。
+        `;
+      } else {
+        result.innerHTML = `
+          <strong>你目前的狀態：高風險燃燒</strong><br/><br/>
+          你正在用情緒與責任感，補主管與制度的洞。<br/>
+          如果不調整互動方式，離職或身心耗損只是時間問題。<br/>
+          請優先保護你自己。
+        `;
+      }
+    }
+  </script>
 </body>
 </html>
