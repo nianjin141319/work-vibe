@@ -3,105 +3,128 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BART 向上管理：工作關係深度診斷</title>
+  <title>BART 向上管理深度診斷</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --olive-leaf: #606c38;
-      --black-forest: #283618;
-      --cornsilk: #fefae0;
-      --sunlit-clay: #dda15e;
-      --copperwood: #bc6c25;
+      --olive-dark: #3c4033;
+      --olive-base: #556b2f; /* 橄欖綠核心色 */
+      --olive-light: #808b6d;
     }
-    body { font-family: 'Noto Sans TC', sans-serif; background: var(--cornsilk); color: var(--black-forest); }
-    .glass-card { background: rgba(255, 255, 255, 0.9); border: 1px solid var(--sunlit-clay); }
-    .option-btn { border: 1px solid var(--sunlit-clay); transition: .2s; background: white; color: var(--black-forest); }
-    .option-btn:hover { background: var(--sunlit-clay); color: white; transform: translateX(4px); }
-    .progress-fill { background: var(--olive-leaf); transition: width 0.4s ease-out; }
+    body { 
+      font-family: 'Noto Sans TC', sans-serif; 
+      background: var(--olive-dark); 
+      background-image: radial-gradient(circle at 20% 30%, #4a5d23 0%, #3c4033 100%);
+      color: #f1f5f9; 
+    }
+    .glass-card { 
+      background: rgba(255, 255, 255, 0.05); 
+      backdrop-filter: blur(16px); 
+      border: 1px solid rgba(255, 255, 255, 0.1); 
+    }
+    .option-btn { 
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1); 
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+    }
+    .option-btn:hover { 
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #a3b18a;
+      transform: translateX(8px);
+    }
+    .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .progress-glow {
+      box-shadow: 0 0 10px rgba(163, 177, 138, 0.5);
+    }
   </style>
 </head>
 
 <body class="min-h-screen flex items-center justify-center p-4">
 
-<div class="max-w-2xl w-full glass-card rounded-3xl p-8 shadow-2xl">
-
-<div id="start-screen" class="text-center">
-  <div class="w-20 h-20 bg-[#606c38] rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#fefae0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-    </svg>
-  </div>
-  <h1 class="text-3xl font-bold mb-4 text-[#283618]">向上管理：BART 深度診斷</h1>
-  <p class="text-[#606c38] mb-8 leading-relaxed font-light">
-    基於工作結構模型，釐清科長帶來的壓力源。<br>
-    <strong>這不是評價你的能力，而是解析你的處境。</strong>
-  </p>
-  <button onclick="startQuiz()" class="bg-[#283618] text-[#fefae0] px-12 py-4 rounded-full font-bold hover:bg-[#606c38] transition-all shadow-md">
-    開始診斷
-  </button>
-</div>
-
-<div id="quiz-screen" class="hidden">
-  <div class="mb-10">
-    <div class="flex justify-between text-xs font-bold text-[#bc6c25] mb-2 tracking-widest">
-      <span id="step">STEP 01</span>
-      <span id="progress">1/12</span>
+<div class="max-w-2xl w-full glass-card rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
+  
+  <div id="start-screen" class="text-center py-10 fade-in">
+    <div class="w-20 h-20 bg-lime-800/30 rounded-full flex items-center justify-center mx-auto mb-6 border border-lime-600/30">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-lime-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
     </div>
-    <div class="w-full bg-[#fefae0] h-2 rounded-full border border-[#dda15e]/30">
-      <div id="bar" class="progress-fill h-full rounded-full"></div>
-    </div>
+    <h1 class="text-3xl font-bold mb-4 tracking-tight">向上管理：BART 深度診斷</h1>
+    <p class="text-slate-300/80 mb-10 leading-relaxed font-light">
+      這是一個舒緩的空間，讓我們釐清：<br>
+      <span class="text-white font-normal text-lg">你在替誰，承受哪一種結構性壓力。</span>
+    </p>
+    <button onclick="startQuiz()" class="bg-[#a3b18a] text-[#344e41] px-12 py-4 rounded-full font-bold hover:bg-[#dad7cd] transition-all transform hover:scale-105 shadow-xl">
+      進入診斷室
+    </button>
   </div>
 
-  <h2 id="question" class="text-xl mb-10 leading-relaxed min-h-[4rem] font-bold text-[#283618]"></h2>
-  <div id="options" class="space-y-3"></div>
-</div>
-
-<div id="result-screen" class="hidden animate-fade-in">
-  <h2 class="text-2xl font-bold text-center mb-6 text-[#283618]">工作結構分析報告</h2>
-
-  <div class="mb-8 flex justify-center">
-    <div class="w-full max-w-[340px] bg-white p-4 rounded-3xl shadow-inner">
-      <canvas id="chart"></canvas>
+  <div id="quiz-screen" class="hidden">
+    <div class="mb-10">
+      <div class="flex justify-between text-xs text-slate-400 mb-3 tracking-widest">
+        <span id="step" class="font-bold">STEP 01</span>
+        <span id="progress">1/12</span>
+      </div>
+      <div class="w-full bg-white/5 h-1.5 rounded-full">
+        <div id="bar" class="bg-[#a3b18a] h-full rounded-full transition-all duration-500 progress-glow"></div>
+      </div>
     </div>
+
+    <h2 id="question" class="text-xl mb-10 leading-relaxed min-h-[5rem] font-medium text-slate-100"></h2>
+    <div id="options" class="space-y-4"></div>
   </div>
 
-  <div class="p-6 rounded-2xl border bg-white border-[#dda15e] mb-8 shadow-sm">
-    <h3 id="result-title" class="text-xl font-bold mb-3 text-[#bc6c25]"></h3>
-    <p id="result-desc" class="text-sm text-[#283618] leading-relaxed mb-4"></p>
-    <div id="resource-alert" class="text-xs font-bold p-3 rounded-lg mb-6"></div>
+  <div id="result-screen" class="hidden fade-in">
+    <h2 class="text-2xl font-bold text-center mb-6">工作結構分析報告</h2>
 
-    <div class="space-y-4">
-      <h4 class="text-xs font-bold uppercase tracking-tighter text-[#606c38] border-b border-[#fefae0] pb-2">
-        📍 建議採取的 POA 溝通對策
-      </h4>
-      <div id="poa" class="text-sm leading-relaxed text-[#283618] space-y-4"></div>
+    <div class="mb-8 flex justify-center p-4 bg-white/5 rounded-3xl">
+      <div class="w-full max-w-[320px]">
+        <canvas id="chart"></canvas>
+      </div>
     </div>
-  </div>
 
-  <button onclick="location.reload()" class="text-xs text-[#bc6c25] hover:underline w-full font-bold">
-    重新評估工作結構
-  </button>
-</div>
+    <div class="p-7 rounded-[2rem] border bg-white/5 border-white/10 mb-8 shadow-inner">
+      <h3 id="result-title" class="text-xl font-bold mb-4 text-[#a3b18a]"></h3>
+      <p id="result-desc" class="text-sm text-slate-300 leading-relaxed mb-6"></p>
+
+      <div class="space-y-4">
+        <h4 class="text-xs font-bold uppercase tracking-[0.2em] text-[#a3b18a]/70">
+          🛠 POA 策略行動指南
+        </h4>
+        <div id="poa" class="bg-black/20 p-5 rounded-2xl text-sm leading-relaxed border border-white/5 font-light"></div>
+      </div>
+    </div>
+
+    <p id="resource-status" class="text-xs text-center text-slate-400 mb-8 italic"></p>
+
+    <button onclick="location.reload()" class="text-sm text-slate-400 hover:text-white w-full transition-colors underline underline-offset-8">
+      重啟對話
+    </button>
+  </div>
 
 </div>
 
 <script>
 const questions = [
- {q:"當科長臨時改變專案優先順序時，我通常會：", o:["先溝通合理性與衝擊","確認資源後接受","內心糾結但保持沈默","立刻全盤配合不問細節"], c:"B"},
- {q:"當科長跳過你直接找組員交辦任務時，你的反應：", o:["找科長釐清溝通窗口","提醒組員務必回報","感到不快但自行補位完成","放棄反映，覺得說了也沒用"], c:"A"},
- {q:"對於科長對你這角色的『核心期待』，你覺得：", o:["非常清楚且有共識","大致清楚但偶爾模糊","期待常隨他心情變動","完全捉摸不定"], c:"R"},
- {q:"科長臨時交辦的瑣事，佔用你核心產出的比例：", o:["低於 10%","約 20% - 30%","接近一半時間","超過一半，常須加班補齊"], c:"T"},
- {q:"當你在工作遇到瓶頸，科長能提供實質支持：", o:["總是如此","經常如此","很少發生","從不如此"], c:"Res"},
- {q:"科長願意傾聽並理解你的專業考量：", o:["高度認同","部分認同","很少能對話","完全不認同"], c:"Res"},
- {q:"下班或非工作時間，收到科長交辦事項的頻率：", o:["幾乎沒有","偶爾發生","每週都有","幾乎每天"], c:"B"},
- {q:"關於組內獎懲與資源分配，你擁有的話語權：", o:["具有關鍵決定性","有部分影響力","僅供參考","完全沒有影響力"], c:"A"},
- {q:"你提出流程優化建議時，科長的反應：", o:["積極授權並支持","口頭同意但沒資源","保持觀望、無明確態度","經常質疑或否決"], c:"R"},
- {q:"目前與科長的互動模式，是否正在消耗你的健康：", o:["完全不會","偶爾感到疲累","常感到焦慮","已陷入精疲力竭"], c:"T"},
- {q:"你對科長提出『不合理要求』的拒絕安全感：", o:["很有信心","看情況決定","感到困難","完全不敢開口"], c:"B"},
- {q:"科長交辦任務前，是否會給予清楚的成功標準：", o:["標準非常明確","大致有方向","很模糊","做完才說不是他要的"], c:"Res"}
+ {q:"當科長臨時改變優先順序時，我通常會：", o:["討論合理性並確認影響","稍作確認後接受","內心抗拒但保持沈默","立刻放下手邊工作配合"], c:"B"},
+ {q:"當科長跳過你直接交辦組員雜事時，你的反應是：", o:["找科長釐清溝通窗口","要求組員務必向我回報","感到不快但自行補位","放棄反映，認命接受"], c:"A"},
+ {q:"關於科長對你這個角色的『真正期待』，你感覺：", o:["目標清晰且穩定","大致清楚但細節模糊","常隨科長心情變動","完全不明，感到迷航"], c:"R"},
+ {q:"臨時交辦的庶務吃掉你專案時間的比例：", o:["低於 10%","約 20–30%","接近 50%","超過一半，常需加班"], c:"T"},
+ {q:"當你在工作遇到瓶頸時，科長能提供實質支持：", o:["總是如此","經常如此","很少發生","從不如此"], c:"Res"},
+ {q:"科長願意理解你的專業考量或管理難處：", o:["高度認同","部分認同","很少感受到","完全不認同"], c:"Res"},
+ {q:"在非工作時間被交辦或聯絡的頻率：", o:["幾乎沒有","偶爾發生","每週都有","幾乎每天"], c:"B"},
+ {q:"你在組內資源或考績上的實質話語權：", o:["具有決定性影響","有部分影響力","僅能提供參考","完全沒有權力"], c:"A"},
+ {q:"當你主動提出流程優化時，科長的支持態度：", o:["積極授權並支持","口頭支持但沒行動","持保留或觀望態度","經常質疑或阻礙"], c:"R"},
+ {q:"目前的工作壓力是否正在消耗你的健康或情緒：", o:["完全不會","偶爾疲累","常感焦慮","已精疲力竭"], c:"T"},
+ {q:"你拒絕不合理要求時的心理安全感：", o:["很有信心","視情況而定","感到困難","完全不敢"], c:"B"},
+ {q:"科長是否會在專案開始前給予清楚的成功標準：", o:["標準極清晰","尚算明確","常有灰色地帶","事後才說做錯"], c:"Res"}
 ];
 
 let i=0;
@@ -115,16 +138,21 @@ function startQuiz(){
 
 function show(){
  const q=questions[i];
- document.getElementById('question').innerText=q.q;
- document.getElementById('step').innerText=`STEP ${String(i+1).padStart(2,'0')}`;
- document.getElementById('progress').innerText=`${i+1}/${questions.length}`;
+ const questionEl = document.getElementById('question');
+ questionEl.classList.remove('fade-in');
+ void questionEl.offsetWidth; // trigger reflow
+ questionEl.classList.add('fade-in');
+ 
+ questionEl.innerText=q.q;
+ document.getElementById('step').innerText=`STEP ${String(i+1).padStart(2, '0')}`;
+ document.getElementById('progress').innerText=`${i+1} / ${questions.length}`;
  document.getElementById('bar').style.width=`${(i+1)/questions.length*100}%`;
 
  const box=document.getElementById('options');
  box.innerHTML='';
  q.o.forEach((t,idx)=>{
   const b=document.createElement('button');
-  b.className='option-btn w-full p-4 rounded-xl text-left font-medium';
+  b.className='option-btn w-full p-4 rounded-2xl text-left text-slate-200';
   b.innerText=t;
   b.onclick=()=>choose(idx+1);
   box.appendChild(b);
@@ -141,58 +169,57 @@ function choose(v){
 function result(){
  document.getElementById('quiz-screen').classList.add('hidden');
  document.getElementById('result-screen').classList.remove('hidden');
- confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 }, colors: ['#606c38', '#bc6c25'] });
+ confetti({ particleCount: 150, spread: 70, origin: { y: 0.8 }, colors: ['#a3b18a', '#dad7cd', '#588157'] });
 
  const main=['B','A','R','T'].sort((a,b)=>score[b]-score[a]).slice(0,2);
+
  const map={
-  B:{t:"界線失守 (Boundary)",d:"你正在替制度吸收科長的隨機干擾，界線頻繁被刺穿。",p:"<strong>Plan:</strong> 列出當前專案負載。<br><strong>Offer:</strong> 建議臨時事項放入待辦。<br><strong>Ask:</strong> 請科長決定哪個舊任務可先暫停。"},
-  A:{t:"權力真空 (Authority)",d:"你承擔管理之責，但科長並未給予對等授權，導致你名不正言不順。",p:"<strong>Plan:</strong> 擬定明確的回報窗口流程。<br><strong>Offer:</strong> 提議由你統一過濾組員問題。<br><strong>Ask:</strong> 請科長公開確立你的決策範圍。"},
-  R:{t:"角色錯位 (Role)",d:"你被當作『進階助理』或『救火隊員』，而非發揮主管的管理價值。",p:"<strong>Plan:</strong> 整理管理導向的工作週報。<br><strong>Offer:</strong> 提供流程優化提案。<br><strong>Ask:</strong> 確認科長對你職位的核心 KPI 期待。"},
-  T:{t:"任務過載 (Task)",d:"非核心的瑣事已佔據過多能量，導致你在重要專案上陷入空轉。",p:"<strong>Plan:</strong> 展示任務佔比分佈圖。<br><strong>Offer:</strong> 找出可外包或自動化的瑣事。<br><strong>Ask:</strong> 針對本月目標重新排定優先順序。"}
+ B:{t:"界線失守",d:"你正在替制度吸收雜訊，界線頻繁被科長穿透。",p:"<strong>Plan-Offer-Ask:</strong><br>列出排程 → 提議將臨時事項排入下週清單 → 請問科長是否接受原專案延後？"},
+ A:{t:"權力真空",d:"你承擔了組長的責任，但沒有對等的正式授權。",p:"<strong>策略建議:</strong><br>建立單一窗口機制 → 擬定提案流程書 → 請科長在組務會議公開確認你的權限。"},
+ R:{t:"角色錯位",d:"你被當成資深執行者或助理，而非管理角色。",p:"<strong>定位調整:</strong><br>準備『管理型報表』 → 向科長對齊 KPI → 確認核心職責是『產出』還是『管理』。"},
+ T:{t:"任務過載",d:"目前的任務量已超過健康負荷，處於高風險區。",p:"<strong>減壓方案:</strong><br>列出任務清單 → 標示可移除或自動化的項目 → 向科長詢問當下的絕對優先級。"}
  };
 
  document.getElementById('result-title').innerText= `${map[main[0]].t} × ${map[main[1]].t}`;
- document.getElementById('result-desc').innerText= `${map[main[0]].d} 同時伴隨著 ${map[main[1]].d}。`;
- document.getElementById('poa').innerHTML= `
-  <div class="bg-[#fefae0]/50 p-4 rounded-lg border-l-4 border-[#bc6c25]">
-    <span class="font-bold text-[#bc6c25]">#針對 ${map[main[0]].t}：</span><br>${map[main[0]].p}
-  </div>
-  <div class="bg-[#fefae0]/50 p-4 rounded-lg border-l-4 border-[#606c38]">
-    <span class="font-bold text-[#606c38]">#針對 ${map[main[1]].t}：</span><br>${map[main[1]].p}
-  </div>`;
+ document.getElementById('result-desc').innerText= `${map[main[0]].d} 同時伴隨 ${map[main[1]].d}`;
+ document.getElementById('poa').innerHTML= `<strong>【核心：${map[main[0]].t}】</strong><br>${map[main[0]].p}<br><br><strong>【伴隨：${map[main[1]].t}】</strong><br>${map[main[1]].p}`;
+ 
+ const resDesc = score.Res > 8 ? "⚠ 資源枯竭警示：你目前幾乎沒有緩衝資源，這會讓結構壓力直接轉化為身心消耗。" : "💡 資源緩衝狀態：你尚能獲得部分支持，建議在資源還沒耗盡前主動調整結構。";
+ document.getElementById('resource-status').innerText = resDesc;
 
- const resAlert = document.getElementById('resource-alert');
- if(score.Res > 8) {
-  resAlert.className += " bg-red-100 text-red-800";
-  resAlert.innerText = "⚠️ 警示：目前幾乎沒有緩衝資源，任何新壓力都會直接轉化為情緒消耗。";
- } else {
-  resAlert.className += " bg-green-100 text-green-800";
-  resAlert.innerText = "💡 資源：你手上仍有些許緩衝空間，建議趁現在重新與科長劃清邊界。";
- }
-
- renderChart();
+ chart();
 }
 
-function renderChart(){
- new Chart(document.getElementById('chart'),{
+function chart(){
+ const ctx = document.getElementById('chart').getContext('2d');
+ new Chart(ctx, {
   type:'radar',
   data:{
    labels:['界線','權力','角色','任務','資源不足'],
    datasets:[{
-    data:[score.B, score.A, score.R, score.T, score.Res],
-    fill:true,
-    backgroundColor:'rgba(96, 108, 56, 0.1)',
-    borderColor:'#606c38',
-    pointBackgroundColor:'#bc6c25',
-    borderWidth: 2
+     data:[score.B, score.A, score.R, score.T, score.Res],
+     fill:true,
+     backgroundColor:'rgba(163, 177, 138, 0.2)',
+     borderColor:'#a3b18a',
+     pointBackgroundColor:'#fff',
+     borderWidth: 2
    }]
   },
   options:{
     plugins:{legend:{display:false}},
-    scales:{r:{min:0,max:15,ticks:{display:false},grid:{color:'#fefae0'},angleLines:{color:'#fefae0'}}}
+    scales:{
+      r:{
+        min:0, max:15,
+        ticks:{display:false},
+        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+        angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+        pointLabels: { color: '#808b6d', font: { size: 12 } }
+      }
+    }
   }
  });
 }
 </script>
+
 </body>
 </html>
