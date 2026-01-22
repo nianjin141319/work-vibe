@@ -1,188 +1,198 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BART 向上管理：工作關係深度診斷</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; color: #1e293b; }
-        .glass-card { background: white; border: 1px solid rgba(0, 0, 0, 0.05); }
-        .progress-bar { transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .option-btn { transition: all 0.2s; border: 1px solid #e2e8f0; }
-        .option-btn:hover { background: #f1f5f9; border-color: #3b82f6; transform: translateY(-1px); }
-        .active-btn { background: #3b82f6 !important; color: white !important; border-color: #3b82f6 !important; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BART 向上管理：工作關係深度診斷</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --olive-leaf: #606c38;
+      --black-forest: #283618;
+      --cornsilk: #fefae0;
+      --sunlit-clay: #dda15e;
+      --copperwood: #bc6c25;
+    }
+    body { font-family: 'Noto Sans TC', sans-serif; background: var(--cornsilk); color: var(--black-forest); }
+    .glass-card { background: rgba(255, 255, 255, 0.9); border: 1px solid var(--sunlit-clay); }
+    .option-btn { border: 1px solid var(--sunlit-clay); transition: .2s; background: white; color: var(--black-forest); }
+    .option-btn:hover { background: var(--sunlit-clay); color: white; transform: translateX(4px); }
+    .progress-fill { background: var(--olive-leaf); transition: width 0.4s ease-out; }
+  </style>
 </head>
+
 <body class="min-h-screen flex items-center justify-center p-4">
 
-    <div id="app" class="max-w-2xl w-full glass-card rounded-3xl p-8 shadow-xl">
-        <div id="start-screen" class="text-center">
-            <h1 class="text-3xl font-bold mb-4 text-slate-800">向上管理：BART 深度診斷</h1>
-            <p class="text-slate-500 mb-8 leading-relaxed">
-                這不是籠統的心理測驗，而是基於 <strong>JD-R 工作模型</strong> 的實戰工具。<br>
-                釐清科長帶給你的壓力，究竟是「任務過重」還是「資源不足」。
-            </p>
-            <button onclick="startQuiz()" class="bg-slate-800 hover:bg-slate-700 text-white px-10 py-4 rounded-full font-bold transition-all shadow-lg">開始情境診斷</button>
-        </div>
+<div class="max-w-2xl w-full glass-card rounded-3xl p-8 shadow-2xl">
 
-        <div id="quiz-screen" class="hidden">
-            <div class="mb-8">
-                <div class="flex justify-between items-end mb-2">
-                    <span id="cat-label" class="text-xs font-bold tracking-widest text-blue-500 uppercase">Scenario</span>
-                    <span id="progress-text" class="text-xs text-slate-400 font-mono">01 / 12</span>
-                </div>
-                <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                    <div id="progress-bar" class="progress-bar bg-blue-500 h-full w-0"></div>
-                </div>
-            </div>
-            
-            <h2 id="question-text" class="text-xl mb-10 min-h-[4rem] font-medium leading-relaxed text-slate-800">載入中...</h2>
-            
-            <div class="space-y-3" id="options-container">
-                </div>
-        </div>
+<div id="start-screen" class="text-center">
+  <div class="w-20 h-20 bg-[#606c38] rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#fefae0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+    </svg>
+  </div>
+  <h1 class="text-3xl font-bold mb-4 text-[#283618]">向上管理：BART 深度診斷</h1>
+  <p class="text-[#606c38] mb-8 leading-relaxed font-light">
+    基於工作結構模型，釐清科長帶來的壓力源。<br>
+    <strong>這不是評價你的能力，而是解析你的處境。</strong>
+  </p>
+  <button onclick="startQuiz()" class="bg-[#283618] text-[#fefae0] px-12 py-4 rounded-full font-bold hover:bg-[#606c38] transition-all shadow-md">
+    開始診斷
+  </button>
+</div>
 
-        <div id="result-screen" class="hidden">
-            <h2 class="text-2xl font-bold text-center mb-6">診斷分析報告</h2>
-            <div class="mb-10 flex justify-center">
-                <div class="w-full max-w-[360px]">
-                    <canvas id="radarChart"></canvas>
-                </div>
-            </div>
-            
-            <div id="result-box" class="p-6 rounded-2xl mb-8 border border-blue-100 bg-blue-50">
-                <h3 id="result-label" class="text-xl font-bold mb-2 text-blue-700"></h3>
-                <p id="result-desc" class="text-slate-600 text-sm leading-relaxed mb-6"></p>
-                
-                <div class="space-y-6">
-                    <div>
-                        <h4 class="text-xs font-bold text-blue-800 uppercase tracking-wider mb-3">🛠 向上管理建議 (POA 法)：</h4>
-                        <div id="poa-advice" class="bg-white/60 p-4 rounded-xl text-sm text-slate-700 leading-relaxed border border-white"></div>
-                    </div>
-                </div>
-            </div>
-
-            <button onclick="location.reload()" class="w-full py-3 text-slate-400 hover:text-slate-600 transition-colors text-sm">重新評估</button>
-        </div>
+<div id="quiz-screen" class="hidden">
+  <div class="mb-10">
+    <div class="flex justify-between text-xs font-bold text-[#bc6c25] mb-2 tracking-widest">
+      <span id="step">STEP 01</span>
+      <span id="progress">1/12</span>
     </div>
+    <div class="w-full bg-[#fefae0] h-2 rounded-full border border-[#dda15e]/30">
+      <div id="bar" class="progress-fill h-full rounded-full"></div>
+    </div>
+  </div>
 
-    <script>
-        const questions = [
-            // 情境化題目
-            { q: "當科長在會議上突然改變專案優先順序時，我通常會：", options: ["據理力爭，討論合理性", "稍作確認後接受", "內心抗拒但保持沈默", "立刻放下手邊工作配合"], cat: "B" },
-            { q: "若科長跳過我直接交代組員雜事，我的第一反應是：", options: ["找科長釐清溝通窗口", "私下請組員務必報備", "感到不快但自行補位", "認命接受，覺得反映也沒用"], cat: "A" },
-            { q: "關於科長對我這個角色的『真正期待』，我覺得：", options: ["非常清楚且有共識", "大致了解但細節模糊", "常覺得他的期待隨心情變動", "完全捉摸不定"], cat: "R" },
-            { q: "處理科長臨時交辦的公文或瑣事，佔用我正常專案時間的比例：", options: ["低於 10%", "約 20% - 30%", "接近 50%", "超過 50%，常要加班補專案"], cat: "T" },
-            
-            // JD-R 資源題目 (正向)
-            { q: "當我在工作遇到瓶頸時，科長能提供實質建議或資源：", options: ["總是如此", "經常如此", "很少發生", "從不如此"], cat: "Res" },
-            { q: "我覺得科長願意理解我的設計考量或管理難處：", options: ["高度認同", "部分認同", "不太認同", "完全不認同"], cat: "Res" },
-            
-            // 更多壓力情境
-            { q: "科長在非工作時間傳訊息交辦事項的頻率：", options: ["幾乎沒有", "偶爾發生", "每週都有", "幾乎每天"], cat: "B" },
-            { q: "在組內資源分配（如考績、預算）上，我擁有的話語權：", options: ["具有決定性", "有部分影響力", "僅能提供參考", "完全沒有權力"], cat: "A" },
-            { q: "當我嘗試優化組內流程時，科長的支持態度：", options: ["積極支持並授權", "口頭支持但沒行動", "持保留或觀望態度", "經常質疑或阻礙"], cat: "R" },
-            { q: "目前的任務量是否讓我覺得『正在消耗個人健康或情緒』：", options: ["完全不會", "偶爾疲累", "常感焦慮", "已精疲力竭"], cat: "T" },
-            { q: "我可以明確拒絕科長不合理的要求而不感到恐懼：", options: ["很有信心", "看情況決定", "有點困難", "完全不敢"], cat: "B" },
-            { q: "科長是否會提供清楚的『成功標準』，而不是做完才說不對：", options: ["標準極清晰", "尚算明確", "常有灰色地帶", "全憑他當下主觀"], cat: "Res" }
-        ];
+  <h2 id="question" class="text-xl mb-10 leading-relaxed min-h-[4rem] font-bold text-[#283618]"></h2>
+  <div id="options" class="space-y-3"></div>
+</div>
 
-        let currentIdx = 0;
-        let scores = { B: 0, A: 0, R: 0, T: 0, Res: 0 };
+<div id="result-screen" class="hidden animate-fade-in">
+  <h2 class="text-2xl font-bold text-center mb-6 text-[#283618]">工作結構分析報告</h2>
 
-        function startQuiz() {
-            document.getElementById('start-screen').classList.add('hidden');
-            document.getElementById('quiz-screen').classList.remove('hidden');
-            showQuestion();
-        }
+  <div class="mb-8 flex justify-center">
+    <div class="w-full max-w-[340px] bg-white p-4 rounded-3xl shadow-inner">
+      <canvas id="chart"></canvas>
+    </div>
+  </div>
 
-        function showQuestion() {
-            const q = questions[currentIdx];
-            document.getElementById('cat-label').innerText = "Step " + (currentIdx + 1);
-            document.getElementById('question-text').innerText = q.q;
-            document.getElementById('progress-text').innerText = `${currentIdx + 1} / 12`;
-            document.getElementById('progress-bar').style.width = `${((currentIdx + 1) / questions.length) * 100}%`;
-            
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
-            q.options.forEach((opt, i) => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn w-full p-4 rounded-xl text-left text-slate-600';
-                btn.innerText = opt;
-                btn.onclick = () => selectOption(i + 1);
-                container.appendChild(btn);
-            });
-        }
+  <div class="p-6 rounded-2xl border bg-white border-[#dda15e] mb-8 shadow-sm">
+    <h3 id="result-title" class="text-xl font-bold mb-3 text-[#bc6c25]"></h3>
+    <p id="result-desc" class="text-sm text-[#283618] leading-relaxed mb-4"></p>
+    <div id="resource-alert" class="text-xs font-bold p-3 rounded-lg mb-6"></div>
 
-        function selectOption(val) {
-            const cat = questions[currentIdx].cat;
-            // 資源題 (Res) 分數反向計算以符合雷達圖邏輯 (分數越高代表壓力越大/資源越少)
-            scores[cat] += (cat === 'Res') ? (5 - val) : val;
-            
-            currentIdx++;
-            if (currentIdx < questions.length) {
-                showQuestion();
-            } else {
-                showResult();
-            }
-        }
+    <div class="space-y-4">
+      <h4 class="text-xs font-bold uppercase tracking-tighter text-[#606c38] border-b border-[#fefae0] pb-2">
+        📍 建議採取的 POA 溝通對策
+      </h4>
+      <div id="poa" class="text-sm leading-relaxed text-[#283618] space-y-4"></div>
+    </div>
+  </div>
 
-        function showResult() {
-            document.getElementById('quiz-screen').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+  <button onclick="location.reload()" class="text-xs text-[#bc6c25] hover:underline w-full font-bold">
+    重新評估工作結構
+  </button>
+</div>
 
-            const data = [scores.B, scores.A, scores.R, scores.T, scores.Res];
-            const maxCat = ['B', 'A', 'R', 'T'].reduce((a, b) => scores[a] > scores[b] ? a : b);
+</div>
 
-            const report = {
-                B: { label: "界線失守：邊界潰散者", desc: "壓力源於科長隨意穿透你的防火牆。你承接了過多『雜訊』，導致組長的核心職能被稀釋。", poa: "<strong>POA 策略：</strong><br>• Plan: 列出目前的專案排程。<br>• Offer: 提議將科長的臨時交辦納入下週清單。<br>• Ask: 請科長確認，若現在處理，是否能接受原專案延後？" },
-                A: { label: "權力真空：無權守護者", desc: "科長跳過你下令，或不給予實質授權。你正在用『個人苦勞』代償『結構缺失』。", poa: "<strong>POA 策略：</strong><br>• Plan: 擬定組員回報機制。<br>• Offer: 提議由你統一匯總給科長。<br>• Ask: 詢問科長是否能在會議中，重申你作為單一窗口的必要性。" },
-                R: { label: "角色定位：慢性消耗中", desc: "科長把你當『資深助理』用。這種角色錯位讓你花太多時間解釋細節，而非解決問題。", poa: "<strong>POA 策略：</strong><br>• Plan: 準備一份管理報表（而非執行報表）。<br>• Offer: 提供關於組務優化的建議。<br>• Ask: 詢問科長對你職位的核心 KPI 是『準時產出』還是『流程建立』？" },
-                T: { label: "任務過載：高風險燃燒", desc: "任務量遠超負荷，且多為無效任務。你正在為了補制度的洞而燃燒健康。", poa: "<strong>POA 策略：</strong><br>• Plan: 展示目前的『任務 vs 時間』分配表。<br>• Offer: 建議某些瑣事可標準化或交辦出去。<br>• Ask: 詢問科長哪些是『不一定要做』的垃圾任務？" }
-            };
+<script>
+const questions = [
+ {q:"當科長臨時改變專案優先順序時，我通常會：", o:["先溝通合理性與衝擊","確認資源後接受","內心糾結但保持沈默","立刻全盤配合不問細節"], c:"B"},
+ {q:"當科長跳過你直接找組員交辦任務時，你的反應：", o:["找科長釐清溝通窗口","提醒組員務必回報","感到不快但自行補位完成","放棄反映，覺得說了也沒用"], c:"A"},
+ {q:"對於科長對你這角色的『核心期待』，你覺得：", o:["非常清楚且有共識","大致清楚但偶爾模糊","期待常隨他心情變動","完全捉摸不定"], c:"R"},
+ {q:"科長臨時交辦的瑣事，佔用你核心產出的比例：", o:["低於 10%","約 20% - 30%","接近一半時間","超過一半，常須加班補齊"], c:"T"},
+ {q:"當你在工作遇到瓶頸，科長能提供實質支持：", o:["總是如此","經常如此","很少發生","從不如此"], c:"Res"},
+ {q:"科長願意傾聽並理解你的專業考量：", o:["高度認同","部分認同","很少能對話","完全不認同"], c:"Res"},
+ {q:"下班或非工作時間，收到科長交辦事項的頻率：", o:["幾乎沒有","偶爾發生","每週都有","幾乎每天"], c:"B"},
+ {q:"關於組內獎懲與資源分配，你擁有的話語權：", o:["具有關鍵決定性","有部分影響力","僅供參考","完全沒有影響力"], c:"A"},
+ {q:"你提出流程優化建議時，科長的反應：", o:["積極授權並支持","口頭同意但沒資源","保持觀望、無明確態度","經常質疑或否決"], c:"R"},
+ {q:"目前與科長的互動模式，是否正在消耗你的健康：", o:["完全不會","偶爾感到疲累","常感到焦慮","已陷入精疲力竭"], c:"T"},
+ {q:"你對科長提出『不合理要求』的拒絕安全感：", o:["很有信心","看情況決定","感到困難","完全不敢開口"], c:"B"},
+ {q:"科長交辦任務前，是否會給予清楚的成功標準：", o:["標準非常明確","大致有方向","很模糊","做完才說不是他要的"], c:"Res"}
+];
 
-            const final = report[maxCat];
-            document.getElementById('result-label').innerText = final.label;
-            document.getElementById('result-desc').innerText = final.desc;
-            document.getElementById('poa-advice').innerHTML = final.poa;
+let i=0;
+let score={B:0,A:0,R:0,T:0,Res:0};
 
-            renderChart(data);
-        }
+function startQuiz(){
+ document.getElementById('start-screen').classList.add('hidden');
+ document.getElementById('quiz-screen').classList.remove('hidden');
+ show();
+}
 
-        function renderChart(data) {
-            const ctx = document.getElementById('radarChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['邊界 (B)', '權威 (A)', '角色 (R)', '任務 (T)', '資源不足 (Res)'],
-                    datasets: [{
-                        data: data,
-                        fill: true,
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        borderColor: '#3b82f6',
-                        pointBackgroundColor: '#3b82f6',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    scales: {
-                        r: {
-                            min: 0, max: 15,
-                            grid: { color: '#e2e8f0' },
-                            angleLines: { color: '#e2e8f0' },
-                            pointLabels: { font: { size: 12, weight: 'bold' }, color: '#64748b' },
-                            ticks: { display: false }
-                        }
-                    },
-                    plugins: { legend: { display: false } }
-                }
-            });
-        }
-    </script>
+function show(){
+ const q=questions[i];
+ document.getElementById('question').innerText=q.q;
+ document.getElementById('step').innerText=`STEP ${String(i+1).padStart(2,'0')}`;
+ document.getElementById('progress').innerText=`${i+1}/${questions.length}`;
+ document.getElementById('bar').style.width=`${(i+1)/questions.length*100}%`;
+
+ const box=document.getElementById('options');
+ box.innerHTML='';
+ q.o.forEach((t,idx)=>{
+  const b=document.createElement('button');
+  b.className='option-btn w-full p-4 rounded-xl text-left font-medium';
+  b.innerText=t;
+  b.onclick=()=>choose(idx+1);
+  box.appendChild(b);
+ });
+}
+
+function choose(v){
+ const c=questions[i].c;
+ score[c]+= (c==="Res")?(5-v):v;
+ i++;
+ i<questions.length?show():result();
+}
+
+function result(){
+ document.getElementById('quiz-screen').classList.add('hidden');
+ document.getElementById('result-screen').classList.remove('hidden');
+ confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 }, colors: ['#606c38', '#bc6c25'] });
+
+ const main=['B','A','R','T'].sort((a,b)=>score[b]-score[a]).slice(0,2);
+ const map={
+  B:{t:"界線失守 (Boundary)",d:"你正在替制度吸收科長的隨機干擾，界線頻繁被刺穿。",p:"<strong>Plan:</strong> 列出當前專案負載。<br><strong>Offer:</strong> 建議臨時事項放入待辦。<br><strong>Ask:</strong> 請科長決定哪個舊任務可先暫停。"},
+  A:{t:"權力真空 (Authority)",d:"你承擔管理之責，但科長並未給予對等授權，導致你名不正言不順。",p:"<strong>Plan:</strong> 擬定明確的回報窗口流程。<br><strong>Offer:</strong> 提議由你統一過濾組員問題。<br><strong>Ask:</strong> 請科長公開確立你的決策範圍。"},
+  R:{t:"角色錯位 (Role)",d:"你被當作『進階助理』或『救火隊員』，而非發揮主管的管理價值。",p:"<strong>Plan:</strong> 整理管理導向的工作週報。<br><strong>Offer:</strong> 提供流程優化提案。<br><strong>Ask:</strong> 確認科長對你職位的核心 KPI 期待。"},
+  T:{t:"任務過載 (Task)",d:"非核心的瑣事已佔據過多能量，導致你在重要專案上陷入空轉。",p:"<strong>Plan:</strong> 展示任務佔比分佈圖。<br><strong>Offer:</strong> 找出可外包或自動化的瑣事。<br><strong>Ask:</strong> 針對本月目標重新排定優先順序。"}
+ };
+
+ document.getElementById('result-title').innerText= `${map[main[0]].t} × ${map[main[1]].t}`;
+ document.getElementById('result-desc').innerText= `${map[main[0]].d} 同時伴隨著 ${map[main[1]].d}。`;
+ document.getElementById('poa').innerHTML= `
+  <div class="bg-[#fefae0]/50 p-4 rounded-lg border-l-4 border-[#bc6c25]">
+    <span class="font-bold text-[#bc6c25]">#針對 ${map[main[0]].t}：</span><br>${map[main[0]].p}
+  </div>
+  <div class="bg-[#fefae0]/50 p-4 rounded-lg border-l-4 border-[#606c38]">
+    <span class="font-bold text-[#606c38]">#針對 ${map[main[1]].t}：</span><br>${map[main[1]].p}
+  </div>`;
+
+ const resAlert = document.getElementById('resource-alert');
+ if(score.Res > 8) {
+  resAlert.className += " bg-red-100 text-red-800";
+  resAlert.innerText = "⚠️ 警示：目前幾乎沒有緩衝資源，任何新壓力都會直接轉化為情緒消耗。";
+ } else {
+  resAlert.className += " bg-green-100 text-green-800";
+  resAlert.innerText = "💡 資源：你手上仍有些許緩衝空間，建議趁現在重新與科長劃清邊界。";
+ }
+
+ renderChart();
+}
+
+function renderChart(){
+ new Chart(document.getElementById('chart'),{
+  type:'radar',
+  data:{
+   labels:['界線','權力','角色','任務','資源不足'],
+   datasets:[{
+    data:[score.B, score.A, score.R, score.T, score.Res],
+    fill:true,
+    backgroundColor:'rgba(96, 108, 56, 0.1)',
+    borderColor:'#606c38',
+    pointBackgroundColor:'#bc6c25',
+    borderWidth: 2
+   }]
+  },
+  options:{
+    plugins:{legend:{display:false}},
+    scales:{r:{min:0,max:15,ticks:{display:false},grid:{color:'#fefae0'},angleLines:{color:'#fefae0'}}}
+  }
+ });
+}
+</script>
 </body>
 </html>
